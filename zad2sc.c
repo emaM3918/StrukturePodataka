@@ -35,12 +35,13 @@ int main()
 {
 	struct osoba head, * q;
 	head.Next = NULL;
-	int n;
+	char n=1;
 
-	while (n != 0)
+	while (n != '0')
 	{
 		printf("Unesite broj funkcije koju zelite obaviti:\n");
 		printf("\t1-unos elementa na pocetak liste\n\t2-ispis liste\n\t3-unos elementa na kraj liste\n\t4-pretraga po prezimenu\n\t5-brisanje elementa iz liste\n\t0-izlaz\n");
+		scanf(" %c", &n);
 
 		switch (n)
 		{
@@ -77,19 +78,6 @@ int main()
 		}
 
 	}
-	/*unosP(&head);
-	ispis(head.Next);
-	unosK(&head);
-	ispis(head.Next);
-
-	q=trazi(head.Next);
-	if (q == NULL)
-		printf("\nOsoba ne postoji u listi!\n");
-	else
-		printf(" %s %s %d\n", q->ime, q->prezime, q->gr);
-
-	brisi(&head);
-	ispis(head.Next);*/
 
 	return 0;
 }
@@ -134,11 +122,11 @@ void unosK(position P)
 	temp = (position)malloc(sizeof(struct osoba));
 	printf("\nUnesite podatke o osobi:\n");
 	scanf(" %s %s %d", temp->ime, temp->prezime, &temp->gr);
-	
-	P=traziZadnji(P);
+
+	P = traziZadnji(P);
 	temp->Next = P->Next;
 	P->Next = temp;
-	
+
 }
 
 position traziPret(position P)
@@ -165,7 +153,7 @@ position traziPret(position P)
 void brisi(position P)
 {
 	position prev;
-	prev=traziPret(P);
+	prev = traziPret(P);
 	if (prev != NULL)
 	{
 		P = prev->Next;
@@ -184,8 +172,8 @@ position trazi(position P)
 
 	printf("\nUnesite prezime osobe koju zelite naci:\n\n");
 	scanf(" %s", prez);
-	while (P != NULL && strcmp(P->prezime, prez)!=0)
+	while (P != NULL && strcmp(P->prezime, prez) != 0)
 		P = P->Next;
-	
+
 	return P;
 }
