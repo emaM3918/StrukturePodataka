@@ -1,6 +1,6 @@
-/*4. Napisati program za zbrajanje i mnoûenje polinoma.Koeficijenti i eksponenti se
-Ëitaju iz datoteke.
-Napomena: Eksponenti u datoteci nisu nuûno sortirani.*/
+Ôªø/*4. Napisati program za zbrajanje i mno≈æenje polinoma.Koeficijenti i eksponenti se
+ƒçitaju iz datoteke.
+Napomena: Eksponenti u datoteci nisu nu≈æno sortirani.*/
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<string.h>
@@ -19,6 +19,8 @@ struct polinom
 	position Next;
 };
 
+
+//void citajPol(position, char*);
 void datUpis(position);
 void ispisiPol(position);
 void zbrojiPol(position, position, position);
@@ -30,7 +32,7 @@ void unosP(position);
 int main()
 {
 	struct polinom	P1, P2, S, P;
-	char c = 1;
+	char c=1;
 
 	P1.Next = NULL;
 	P2.Next = NULL;
@@ -39,7 +41,7 @@ int main()
 
 	while (c != '0')
 	{
-		printf("\tA-unos 1.polinoma na pocetak\n\tB-unos 2.polinoma na pocetak\n\tC-Unos 1. polinoma na kraj\n\tD-Unos 2. polinoma na kraj\n\tE-upis 1. polinoma u datoteku\n\tF-upis 2. polinoma u datoteku\n\tG-ispis polinoma\n\tH-zbroj polinoma\n\tI-produkt polinoma\n\t0-izlaz\n");
+		printf("\tA-unos 1.polinoma na pocetak\n\tB-unos 2.polinoma na pocetak\n\tC-Unos 1. polinoma na kraj\n\tD-Unos 2. polinoma na kraj\n\tE-upis 1. polinoma u datoteku\n\tF-upis 2. polinoma u datoteku\n\tG-ispis polinoma\n\tH-zbroj polinoma\n\tI-produkt polinoma\n\tJ-citanje polinoma 1 iz datoteke\n\tK-citanje polinoma 2 iz datoteke\n\t0-izlaz\n");
 		scanf(" %c", &c);
 
 		switch (c)
@@ -85,6 +87,14 @@ int main()
 			printf("Produkt polinoma je:\n");
 			ispisiPol(P.Next);
 			break;
+		case 'j':
+		case 'J':
+			citajPol(P1.Next, "datoteka1.txt");
+			break;
+		case 'k':
+		case 'K':
+			citajPol(P2.Next, "datoteka2.txt");
+			break;
 		case '0':
 			printf("Kraj\n");
 			break;
@@ -95,10 +105,53 @@ int main()
 	return 0;
 }
 
+
+void citajPol(position P, char* ime_dat)
+{
+	FILE* dat;
+	position q, temp, prev;
+
+	dat = fopen(ime_dat, "r");
+	if (dat==NULL)
+	{
+		printf("Greska u otvaranju datoteke!!!");
+		exit(1);
+	}
+	else
+	{
+		while (feof(dat)==0)
+		{
+			q = (position)malloc(sizeof(struct polinom));
+
+			fscanf(dat, " %d %d", &q->Coeff, &q->Exp);
+
+			temp = P->Next;
+			prev = P;
+			while (temp != NULL && temp->Exp > q->Exp)
+			{
+				prev = temp;
+				temp = temp->Next;
+			}
+
+			prev->Next = q;
+
+			if (temp != NULL)
+				q->Next = temp;
+			else
+				q->Next = NULL;
+		}
+	}
+
+
+}
+
 void ispisiPol(position P)
 {
 
 	printf("\n");
+
+	//P = P->Next;
+
 	while (P != NULL)
 	{
 		if (P->Coeff > 0)
@@ -106,8 +159,14 @@ void ispisiPol(position P)
 		else
 			printf("%d*x^%d", P->Coeff, P->Exp);
 		P = P->Next;
+
+		/*if (P->Next != NULL)
+			printf("+");*/
 	}
+
+
 	printf("\n");
+
 }
 
 void zbrojiPol(position P1, position P2, position S)
@@ -132,7 +191,7 @@ void zbrojiPol(position P1, position P2, position S)
 			q->Coeff = P2->Coeff;
 			P2 = P2->Next;
 		}
-		else
+		else  // P1->Exp == P2->Exp
 		{
 			q->Exp = P1->Exp;
 			q->Coeff = P1->Coeff + P2->Coeff;
@@ -143,22 +202,23 @@ void zbrojiPol(position P1, position P2, position S)
 		S = q;
 	}
 
-	if (P1 != NULL)
-		temp = P1;
-	else
-		temp = P2;
+		if (P1 != NULL)
+			temp = P1;
+		else
+			temp = P2;
 
-	while (temp != NULL)
-	{
-		q = (position)malloc(sizeof(struct polinom));
-		q->Next = NULL;
-		q->Exp = temp->Exp;
-		q->Coeff = temp->Coeff;
-		S->Next = q;
-		S = q;
-		temp = temp->Next;
-	}
+		while (temp != NULL)
+		{
+			q = (position)malloc(sizeof(struct polinom));
+			q->Next = NULL;
+			q->Exp = temp->Exp;
+			q->Coeff = temp->Coeff;
+			S->Next = q;
+			S = q;
+			temp = temp->Next;
+		}
 }
+
 
 void prodPol(position P1, position P2, position P)
 {
@@ -209,6 +269,7 @@ void prodPol(position P1, position P2, position P)
 		}
 		P = P->Next;
 	}
+
 }
 
 void datUpis(position P)
@@ -230,6 +291,37 @@ void datUpis(position P)
 			fprintf(dat, "\n %d %d", P->Coeff, P->Exp);
 			P = P->Next;
 		}
+		fclose(dat);
+	}
+}
+
+void datUcitaj(position P)
+{
+	FILE* dat;
+	char imeDat[10];
+	position temp;
+
+	printf("\nUnesi ime datoteke iz koje zelis procitati listu:");
+	scanf(" %s", imeDat);
+
+	dat = fopen(imeDat, "r");
+
+	if (dat == NULL)
+		printf("\n Ne postoji datoteke s tim imenom");
+	else
+	{
+		while (feof(dat) == 0)
+		{
+			temp = (position)malloc(sizeof(struct polinom));
+
+			fscanf(dat, " %d %d", temp->Coeff, temp->Exp);
+			printf(" %d %d\n", temp->Coeff, temp->Exp);
+
+			temp->Next = P->Next;
+			P->Next = temp;
+			P = temp;
+		}
+
 		fclose(dat);
 	}
 }
